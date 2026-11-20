@@ -1,5 +1,6 @@
 from deck import Deck
 
+DATA_FILE = "cards.json"
 
 def build_sample_deck():
     """Make a small deck so we have something to practice with."""
@@ -49,4 +50,9 @@ def study(deck, rounds=5):
 
 
 if __name__ == "__main__":
-    study(build_sample_deck())
+    deck = Deck.load(DATA_FILE)
+    if len(deck) == 0:
+        deck = build_sample_deck()
+    study(deck)
+    deck.save(DATA_FILE)
+    print(f"\nProgress saved to {DATA_FILE}")

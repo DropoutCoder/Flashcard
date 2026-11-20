@@ -1,3 +1,4 @@
+import json
 import random
 from card import Card
 
@@ -27,7 +28,23 @@ class Deck:
             raise ValueError("The deck is empty. Add some cards first.")
         weights = [self.weight_of(card) for card in self.cards]
         return random.choices(self.cards, weights=weights, k=1)[0]
+    def save(self, filename):
+        """Write all cards and their scores to a JSON file."""
+        data = [card.to_dict() for card in self.cards]
+        with open(filename, "w", encoding="utf-8") as file:
+            json.dump(data, file, indent=2, ensure_ascii=False)
 
+    @classmethod
+    def load(cls, filename):
+        """Read cards from a JSON file. If the file doesn't exist yet, return an empty deck."""
+        deck = cls()
+        try:
+            with open(filename, "r", encoding="utf-8") as file:
+                data = json.load(file)
+        except FileNotFoundError:
+            return deck
+        deck.cards = [Card.from_dict(item) for item in data]
+        return deck
 
 if __name__ == "__main__":
     from collections import Counter
