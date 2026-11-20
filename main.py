@@ -2,6 +2,7 @@ from deck import Deck
 
 DATA_FILE = "cards.json"
 
+
 def build_sample_deck():
     """Make a small deck so we have something to practice with."""
     deck = Deck()
@@ -49,10 +50,72 @@ def study(deck, rounds=5):
     print_summary(deck, asked, correct)
 
 
-if __name__ == "__main__":
+def add_cards(deck):
+    """Let the user type new cards. Press Enter on an empty question to stop."""
+    print("Add new cards. Press Enter on an empty question to stop.\n")
+    added = 0
+
+    while True:
+        question = input("Question: ").strip()
+        if question == "":
+            break
+
+        answer = input("Answer: ").strip()
+        if answer == "":
+            print("The answer can't be empty. Card not added.\n")
+            continue
+
+        deck.add_card(question, answer)
+        added += 1
+        print("Card added!\n")
+
+    print(f"{added} card(s) added.")
+
+
+def list_cards(deck):
+    """Print every card with its number and score."""
+    if len(deck) == 0:
+        print("The deck is empty.")
+        return
+
+    for number, card in enumerate(deck.cards, start=1):
+        print(f"{number}. {card}")
+
+
+def show_menu():
+    """Print the menu and return the user's choice."""
+    print("\n=== Flashcards ===")
+    print("1. Study")
+    print("2. Add cards")
+    print("3. List cards")
+    print("q. Quit")
+    return input("Choose: ").strip().lower()
+
+
+def main():
     deck = Deck.load(DATA_FILE)
     if len(deck) == 0:
         deck = build_sample_deck()
-    study(deck)
+
+    while True:
+        choice = show_menu()
+
+        if choice == "1":
+            study(deck)
+            deck.save(DATA_FILE)
+        elif choice == "2":
+            add_cards(deck)
+            deck.save(DATA_FILE)
+        elif choice == "3":
+            list_cards(deck)
+        elif choice == "q":
+            break
+        else:
+            print("Please type 1, 2, 3 or q.")
+
     deck.save(DATA_FILE)
-    print(f"\nProgress saved to {DATA_FILE}")
+    print(f"Progress saved to {DATA_FILE}")
+
+
+if __name__ == "__main__":
+    main()
